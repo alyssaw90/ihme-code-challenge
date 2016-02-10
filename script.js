@@ -1,3 +1,4 @@
+'use strict';
 
 var HEIGHT = 600;
 var WIDTH = 1100;
@@ -7,6 +8,8 @@ var MARGINS = {
     bottom: 40,
     left: 50
   };
+
+var menus = d3.selectAll('select');
 
 //scales
 var x = d3.time.scale()
@@ -51,4 +54,23 @@ var xAxis = d3.svg.axis()
       .style('text-anchor', 'end')
       .text('Mean Prevalence as Percentage of Population');
 
+d3.csv("data.csv", function(d) {
+
+  return {
+    location: d.location_name,
+    gender: d.sex,
+    year: d.year,
+    mean: d.mean,
+    metric: d.metric
+  };
+}, function(data) {
+  // console.log(data[0]);
+  data.forEach(function(x) {
+    var year = x.year;
+    var mean = x.mean;
+    var sex = x.sex;
+    var location = x.location_name;
+  });
+
+});
 
