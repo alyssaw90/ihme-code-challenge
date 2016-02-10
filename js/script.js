@@ -4,6 +4,7 @@ var margin = {
 	bottom: 40,
 	right: 20
 };
+
 var w = window.innerWidth - (margin.left + margin.right);
 var h = window.innerHeight - 2 * (margin.top + margin.bottom);
 
@@ -15,13 +16,11 @@ var age = document.getElementById('age-group')
 
 d3.csv('data.csv', function(csv){
 
-	// getting country data from csv file and putting it in ascending order
 	var countryData = d3.nest()
 		.key(function(d) {return d.location_name; })
 		.sortKeys(d3.ascending)
 		.entries(csv)
-	//countryData returns as an object need to use for in loop instead of for loop
-	//put country data in to coutnry dropdown
+	
 	for (var i in countryData){
 		var option = document.createElement('option')
 		option.text = countryData[i].key;
@@ -74,14 +73,13 @@ d3.csv('data.csv', function(csv){
 	        	return +d.mean;
 	    	})));
     	}
-    	// console.log(meanArray)
 
 		//SVG container for graph
 		var tip = d3.tip()
 			.attr('class', 'd3-tip')
 			.offset([-10, 0])
 			.html(function(d, i) {
-				return "<strong>Frequency:</strong> <span style='color:red'>" + meanArray[i] + "</span>";
+				return "<strong>Prevalence:</strong> <span style='color:#f2045b'>" + meanArray[i] + "</span>";
 			})
 
 		var graph = d3.select('#graph')

@@ -1,5 +1,16 @@
 body {
   font: 10px sans-serif;
+  background-color: #e0dddd;
+}
+
+.form-inline {
+	text-align: center;
+	margin-top: 30px;
+}
+
+h5, select {
+	display: inline-block;
+	margin-right: 10px;
 }
 
 .axis path,
@@ -10,11 +21,11 @@ body {
 }
 
 .bar {
-  fill: orange;
+  fill: #04f2f2;
 }
 
 .bar:hover {
-  fill: orangered ;
+  fill: #f2045b;
 }
 
 .x.axis path {
@@ -49,3 +60,4 @@ body {
   top: 100%;
   left: 0;
 }
+
