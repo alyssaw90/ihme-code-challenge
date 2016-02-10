@@ -1,76 +1,107 @@
-'use strict';
+var margin = {
+	top: 20,
+	left: 40,
+	bottom: 40,
+	right: 20
+};
+var w = window.innerWidth - (margin.left + margin.right);
+var h = window.innerHeight - 2 * (margin.top + margin.bottom);
 
-var HEIGHT = 600;
-var WIDTH = 1100;
-var MARGINS = {
-    top: 20,
-    right: 20,
-    bottom: 40,
-    left: 50
-  };
+var chart = document.getElementById('graph');
+var gender = document.getElementById('gender');
+var metric = document.getElementById('metric');
+var country = document.getElementById('country');
 
-var menus = d3.selectAll('select');
+d3.csv('data.csv', function(csv){
 
-//scales
-var x = d3.time.scale()
-          .range([0, (WIDTH - MARGINS.right - MARGINS.left)])
-          .domain([new Date(1990, 0, 1), new Date(2013, 0, 1)]);
+	//make graph function
+	function initializeGraph() {
 
-var y = d3.scale.linear()
-      .range([(HEIGHT - MARGINS.bottom - MARGINS.top), 0])
-      .domain([0, (0.75 * 100)]);
+		while (chart.firstChild) {
+			chart.removeChild(chart.firstChild);
+		}
 
-var xAxis = d3.svg.axis()
-        .scale(x)
-        .ticks(10);
-  var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient('left');
+		//Getting year data for y axis
+		var data = d3.nest()
+			.key(function(d) { return d.year; })
+			.sortKeys(d3.ascending)
+			.entries(csv);
 
-  var chart = d3.select('#chart')
-        .append('svg')
-        .attr('height', HEIGHT)
-        .attr('width', WIDTH)
-        .attr('id', 'display');
+		var meanArray = [];
+    	for (var i in data) { 
+	    	meanArray.push(d3.mean(data[i].values.filter(function(d) {
+	    		return d.sex === gender.value;
+	    	}).filter(function(d) {
+	    		return d.metric === metric.value;
+	    	}).filter(function(d) {
+	    		if (country.value === 'all') { return true; }
+	    		return d.location_name === country.value;
+	    	}).map(function(d) {
+	        	return +d.mean;
+	    	})));
+    	}
+    	console.log(meanArray)
 
-  chart.append('g').call(xAxis)
-      .attr('transform', 'translate(' + MARGINS.left + ', ' +
-        (HEIGHT - MARGINS.bottom) + ')')
-      .attr('class', 'axis')
-      .selectAll('text')
-      .attr('y', 5)
-      .attr('x', 6)
-      .attr('dy', '.35em')
-      .attr('transform', 'rotate(45)')
-      .style('text-anchor', 'start');
+		//SVG container for graph
+		var graph = d3.select('#graph')
+		.attr({
+			'width': w + (margin.left + margin.right),
+			'height': h + (margin.top + margin.bottom)
+		})
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  chart.append('g').call(yAxis)
-      .attr('class', 'axis')
-      .attr('transform', 'translate(' + MARGINS.left + ', ' + MARGINS.top + ')')
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', 7)
-      .style('text-anchor', 'end')
-      .text('Mean Prevalence as Percentage of Population');
+		var x = d3.scale.ordinal().rangeRoundBands([0, w], 0.1)
+		.domain(data.map(function(d) {return d.key;}))
 
-d3.csv("data.csv", function(d) {
+		var yDomain = [d3.min(meanArray) - 0.01, d3.max(meanArray) + 0.01];
 
-  return {
-    location: d.location_name,
-    gender: d.sex,
-    year: d.year,
-    mean: d.mean,
-    metric: d.metric
-  };
-}, function(data) {
-  // console.log(data[0]);
-  data.forEach(function(x) {
-    var year = x.year;
-    var mean = x.mean;
-    var sex = x.sex;
-    var location = x.location_name;
-  });
+		var y = d3.scale.linear()
+		.range([h, 0])
+		.domain(yDomain)
+
+		//X and Y Axis
+		var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient('bottom')
+		.ticks(data.length)
+
+		var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient('left')
+		.ticks(10, '%');
+
+		graph.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0,' + h + ')')
+		.call(xAxis)
+		.append('text')
+		.attr('x', w / 2)
+		.attr('y', 2 * margin.top)
+		.style('font-size', '14px')
+		.style('text-anchor', 'middle')
+		.text('Year');
+
+		graph.append('g')
+		.attr('class', 'axis')
+		.call(yAxis)
+		.append('text')
+		.attr('transform', 'rotate(-90)')
+		.attr('y', 6)
+		.attr('dy', '.71em')
+		.style('font-size', '14px')
+		.style('text-anchor', 'end')
+		.text('Prevalence (Percentage)');
+	}
+
+	gender.addEventListener('change', function(){
+		initializeGraph()
+	});
+	metric.addEventListener('change', function(){
+		initializeGraph()
+	});
+	country.addEventListener('change', function(){
+		initializeGraph()
+	});
 
 });
-
