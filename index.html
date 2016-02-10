@@ -1,28 +1,27 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
 	<title>IHME Code Challenge</title>
+	<link rel="stylesheet" href="style.css">
 	
 </head>
 <body>
 	<select id='gender'>
-		<option value='both' selected>Males and Females</option>
+		<option value='both'>Males and Females</option>
 		<option value='male'>Males</option>
 		<option value='female'>Females</option>
 	</select> that are 
 	<select id='metric'>
-		<option value='overweight' selected>Overweight</option>
+		<option value='overweight'>Overweight</option>
 		<option value='obese'>Obese</option>
 	</select> in 
 	<select id='country'>
-		<option value='all' selected>All Countries</option>
+		<option value='all'>All Countries</option>
 	</select>
 	</br>
 	<svg id='graph'></svg>
 	<script src='//d3js.org/d3.v3.min.js' charset='utf-8'></script>
 	<script src="script.js"></script>
 </body>
-
-
-
 </html>

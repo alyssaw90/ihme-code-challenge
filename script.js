@@ -14,7 +14,22 @@ var country = document.getElementById('country');
 
 d3.csv('data.csv', function(csv){
 
-	//make graph function
+	// getting country data from csv file and putting it in ascending order
+	var countryData = d3.nest()
+		.key(function(d) {return d.location_name; })
+		.sortKeys(d3.ascending)
+		.entries(csv)
+	// console.log(countryData)
+	//countryData returns as an object need to use for in loop instead of for loop
+	//put country data in to coutnry dropdown
+	for (var i in countryData){
+		var option = document.createElement('option')
+		option.text = countryData[i].key;
+		option.value = countryData[i].key;
+		country.add(option)
+	}
+
+	//graph function
 	function initializeGraph() {
 
 		while (chart.firstChild) {
@@ -31,12 +46,15 @@ d3.csv('data.csv', function(csv){
     	for (var i in data) { 
 	    	meanArray.push(d3.mean(data[i].values.filter(function(d) {
 	    		return d.sex === gender.value;
-	    	}).filter(function(d) {
+	    	})
+	    	.filter(function(d) {
 	    		return d.metric === metric.value;
-	    	}).filter(function(d) {
+	    	})
+	    	.filter(function(d) {
 	    		if (country.value === 'all') { return true; }
 	    		return d.location_name === country.value;
-	    	}).map(function(d) {
+	    	})
+	    	.map(function(d) {
 	        	return +d.mean;
 	    	})));
     	}
